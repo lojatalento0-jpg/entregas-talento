@@ -240,10 +240,28 @@
   });
 
   /* ---------- login (uma vez por celular) ---------- */
-  function telaLogin(msg) {
+  async function telaLogin(msg) {
     const L = $('login'); L.hidden = false;
-    L.innerHTML = '<img src="logo.png" alt="Talento"><h1>Entregas</h1><p>Entrada feita uma vez neste celular.</p>' + (msg ? '<p class="aviso">' + esc(msg) + '</p>' : '') + '<input id="lEmail" type="email" autocomplete="username" placeholder="E-mail do celular"><input id="lSenha" type="password" autocomplete="current-password" placeholder="Senha"><button type="button" class="prim" id="lOk">Entrar</button>';
-    $('lOk').onclick = async () => { try { await entrar($('lEmail').value.trim(), $('lSenha').value); L.hidden = true; iniciar(); } catch (e) { telaLogin('Não entrou. Confira e-mail e senha e se há sinal.'); } };
+    const salvo = (await kvGet('emailLembrado')) || '';
+    L.innerHTML = '<img src="logo.png" alt="Talento"><h1>Entregas</h1><p>Entrada feita uma vez neste celular. Depois o app fica conectado.</p>' + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
+      '<form id="lForm" method="post" action="#" autocomplete="on">' +
+      '<label for="lEmail">E-mail</label><input id="lEmail" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" required value="' + esc(salvo) + '">' +
+      '<label for="lSenha">Senha</label><div class="senha"><input id="lSenha" name="password" type="password" autocomplete="current-password" required><button type="button" id="lVer" aria-label="Mostrar senha">Mostrar</button></div>' +
+      '<label class="lembrar"><input id="lLembrar" type="checkbox" ' + (salvo || !msg ? 'checked' : '') + '> Lembrar meu e-mail neste celular</label>' +
+      '<button type="submit" class="prim" id="lOk">Entrar</button>' +
+      '<p class="dica">Quando o celular perguntar <b>"Salvar senha?"</b>, toque em <b>Salvar</b>. Assim, se precisar entrar de novo, o iPhone ou o Android preenchem a senha sozinhos.</p></form>';
+    $('lVer').onclick = () => { const i = $('lSenha'); const ver = i.type === 'password'; i.type = ver ? 'text' : 'password'; $('lVer').textContent = ver ? 'Esconder' : 'Mostrar'; $('lVer').setAttribute('aria-label', ver ? 'Esconder senha' : 'Mostrar senha'); };
+    if (salvo) $('lSenha').focus();
+    $('lForm').onsubmit = async (ev) => {
+      ev.preventDefault();
+      const email = $('lEmail').value.trim(); $('lOk').disabled = true; $('lOk').textContent = 'Entrando…';
+      try {
+        await entrar(email, $('lSenha').value);
+        await kvSet('emailLembrado', $('lLembrar').checked ? email : '');
+        $('lSenha').type = 'password';
+        setTimeout(() => { L.hidden = true; L.innerHTML = ''; iniciar(); }, 400);
+      } catch (e) { telaLogin(navigator.onLine ? 'Não entrou. Confira o e-mail e a senha.' : 'Sem internet. Para entrar a primeira vez precisa de sinal ou Wi-Fi.'); }
+    };
   }
 
   /* ---------- início ---------- */
