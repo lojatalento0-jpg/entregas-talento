@@ -24,8 +24,12 @@
   <div class="bar"><div id="barra"></div></div>
   <div id="sinal" class="sinal" role="status"></div>
 </header>
-<main id="main" aria-live="polite"></main>
+<main id="main" aria-live="polite"><p class="vazio">Carregando…</p></main>
 <div id="login" class="login" hidden></div>
+<script>
+window.addEventListener('error',function(e){var m=document.getElementById('main');if(m)m.insertAdjacentHTML('afterbegin','<p class="aviso" style="background:#fee2e2;padding:10px;border-radius:10px">Erro no app: '+String(e.message||e).replace(/</g,'&lt;')+' (linha '+(e.lineno||'?')+'). Mande um print disso ao Joabe.</p>');});
+window.addEventListener('unhandledrejection',function(e){var m=document.getElementById('main');if(m)m.insertAdjacentHTML('afterbegin','<p class="aviso" style="background:#fee2e2;padding:10px;border-radius:10px">Erro no app: '+String((e.reason&&e.reason.message)||e.reason).replace(/</g,'&lt;')+'. Mande um print disso ao Joabe.</p>');});
+</script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>
