@@ -55,11 +55,10 @@ button:focus-visible,.btn:focus-visible{outline:3px solid #f59e0b;outline-offset
 .fecha .nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.fecha .nums div{background:#45423f;border-radius:10px;padding:8px;display:flex;flex-direction:column}
 .fecha .nums b{font-size:22px}.fecha ul{margin:0;padding-left:18px;font-size:14px}
 .login[hidden]{display:none}
-.login{position:fixed;inset:0;background:var(--bg);z-index:10;padding:24px 16px;display:flex;flex-direction:column;gap:12px;max-width:480px;margin:0 auto}
+.login{position:fixed;inset:0;z-index:10;overflow-y:auto;background:linear-gradient(180deg,#fff 0,#fff 34%,var(--bg) 34%);display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 28px) 18px calc(env(safe-area-inset-bottom) + 20px)}
 .login input{font:inherit;font-size:16px;min-height:46px;border:1px solid var(--line);border-radius:10px;padding:0 12px}
 .vazio{color:var(--mute);text-align:center;padding:20px}
 
-.login img{width:min(320px,80%);margin:10px auto 4px;display:block}
 .sec{color:var(--ink)}
 
 /* Tela larga (tablet/computador): tudo centralizado na mesma largura */
@@ -75,30 +74,13 @@ img{max-width:100%}
 .dica{font-size:13px;color:var(--mute);margin:4px 0 0}
 input.pin{font-size:28px;letter-spacing:.6em;text-align:center}
 
-/* Abertura animada do login: caminhão caçamba chega, descarrega e a marca aparece */
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.intro{display:flex;flex-direction:column;align-items:center;gap:2px;margin:4px 0 6px}
-.cena{width:100%;max-width:380px;height:auto;overflow:visible}
-.cena .chao{stroke:#bdb9b9;stroke-width:3;stroke-linecap:round}
-.cena .chassi{fill:#363435}.cena .corpo{fill:#c62828}.cena .borda{fill:#8e1f1f}.cena .carga{fill:#b8875a}
-.cena .cabine{fill:#f4f4f4;stroke:#363435;stroke-width:2}.cena .vidro{fill:#9cc3dd}.cena .farol{fill:#ffd54f}
-.cena .roda circle{fill:#2b292a;stroke:#6d6a6a;stroke-width:4}.cena .roda path{stroke:#9a9696;stroke-width:3}
-.cena .monte path{fill:#b8875a}.cena .graos circle{fill:#b8875a}
-.cena .caminhao{animation:chega 1.2s cubic-bezier(.2,.8,.3,1) both}
-.cena .roda{transform-box:view-box;animation:gira .4s linear 3 both}
-.cena .cacamba{transform-box:fill-box;transform-origin:0% 100%;animation:bascula 1.5s ease-in-out 1.15s both}
-.cena .graos circle{opacity:0;animation:cai .7s ease-in 1.45s both}
-.cena .graos circle:nth-child(2){animation-delay:1.55s}.cena .graos circle:nth-child(3){animation-delay:1.65s}.cena .graos circle:nth-child(4){animation-delay:1.75s}.cena .graos circle:nth-child(5){animation-delay:1.85s}
-.cena .monte{transform-box:fill-box;transform-origin:50% 100%;animation:monte .7s ease-out 1.6s both}
-.cena .losango{transform-box:fill-box;transform-origin:50% 100%;animation:pula .7s cubic-bezier(.3,1.6,.5,1) 2.25s both,balanca .6s ease-in-out 2.95s 2}
-.logoIntro{width:min(300px,78%);height:auto;animation:surge .6s cubic-bezier(.3,1.5,.5,1) 2.7s both}
-@keyframes chega{from{transform:translateX(-330px)}to{transform:translateX(0)}}
-@keyframes gira{to{transform:rotate(360deg)}}
-@keyframes bascula{0%{transform:rotate(0)}35%,70%{transform:rotate(-26deg)}100%{transform:rotate(0)}}
-@keyframes cai{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(-26px,34px)}}
-@keyframes monte{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-@keyframes pula{0%{opacity:0;transform:translateY(34px) scale(.3)}100%{opacity:1;transform:translateY(-30px) scale(1)}}
-@keyframes balanca{0%,100%{transform:translateY(-30px) rotate(0)}25%{transform:translateY(-30px) rotate(-8deg)}75%{transform:translateY(-30px) rotate(8deg)}}
-@keyframes surge{from{opacity:0;transform:translateY(12px) scale(.9)}to{opacity:1;transform:none}}
-.login form{animation:surge .4s ease-out .2s both}
-@media (prefers-reduced-motion: reduce){.cena *,.logoIntro,.login form{animation:none!important}.cena .graos{display:none}.cena .losango{transform:translateY(-30px)}}
+.ltopo{width:100%;max-width:420px;display:flex;justify-content:center;padding:8px 0 22px;border-bottom:3px solid var(--acc);margin-bottom:20px}
+.ltopo img{width:min(300px,78vw);height:auto;display:block}
+.lcard{width:100%;max-width:420px;background:#fff;border-radius:16px;padding:22px 18px;box-shadow:0 8px 24px rgba(43,41,42,.12),0 1px 2px rgba(43,41,42,.08);display:flex;flex-direction:column;gap:10px}
+.lcard h1{margin:0;font-size:24px;color:var(--ink)}
+.lsub{margin:0 0 6px;color:var(--mute);font-size:14px;line-height:1.45}
+.lcard input:not([type=checkbox]){background:#faf9f9;border-color:#d9d6d6}
+.lcard input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(198,40,40,.15);background:#fff}
+.lcard .prim{min-height:50px;font-size:17px;margin-top:4px}
+.lcard .link{border:0;background:none;color:var(--acc);font-weight:600;min-height:44px}
+.lrodape{margin:18px 0 0;font-size:12px;color:var(--mute);text-align:center}

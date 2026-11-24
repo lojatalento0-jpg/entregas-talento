@@ -240,16 +240,21 @@
   });
 
   /* ---------- login (uma vez por celular) ---------- */
+  function moldura(titulo, sub, corpo) {
+    return '<div class="ltopo"><img src="logo.png" alt="Talento Construção, Móveis e Decoração"></div>' +
+      '<div class="lcard"><h1>' + esc(titulo) + '</h1><p class="lsub">' + esc(sub) + '</p>' + corpo + '</div>' +
+      '<p class="lrodape">Talento Materiais de Construção · Santa Rosa do Sul/SC</p>';
+  }
   async function telaLogin(msg) {
     const L = $('login'); L.hidden = false;
     const salvo = (await kvGet('emailLembrado')) || '';
-    L.innerHTML = '<div class="intro" aria-hidden="true"><svg viewBox="0 0 360 170" class="cena"><line x1="0" y1="152" x2="360" y2="152" class="chao"/><g class="monte"><path d="M58 152 Q80 118 104 120 Q126 122 140 152 Z"/></g><g class="graos"><circle cx="118" cy="104" r="4"/><circle cx="114" cy="110" r="3"/><circle cx="121" cy="114" r="3.5"/><circle cx="116" cy="118" r="2.5"/><circle cx="123" cy="108" r="2.5"/></g><g class="losango"><image href="icon-192.png" x="78" y="86" width="48" height="48"/></g><g class="caminhao"> <rect x="126" y="114" width="176" height="10" rx="2" class="chassi"/> <g class="cacamba"><path d="M126 70 L246 70 L246 114 L132 114 Z" class="corpo"/><path d="M130 70 Q186 52 242 70 Z" class="carga"/><rect x="126" y="70" width="120" height="6" class="borda"/></g> <path d="M252 72 L290 72 Q300 72 304 84 L310 104 L310 124 L252 124 Z" class="cabine"/> <path d="M262 80 L288 80 Q294 80 297 88 L301 100 L262 100 Z" class="vidro"/> <rect x="304" y="108" width="8" height="6" rx="1" class="farol"/> <g class="roda" style="transform-origin:152px 134px"><circle cx="152" cy="134" r="15"/><path d="M152 121 V147 M139 134 H165"/></g> <g class="roda" style="transform-origin:184px 134px"><circle cx="184" cy="134" r="15"/><path d="M184 121 V147 M171 134 H197"/></g> <g class="roda" style="transform-origin:282px 134px"><circle cx="282" cy="134" r="15"/><path d="M282 121 V147 M269 134 H295"/></g></g></svg><img src="logo.png" alt="" class="logoIntro"></div><h1 class="sr">Entregas Talento</h1><p>Entrada feita uma vez neste celular. Depois o app fica conectado.</p>' + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
+    L.innerHTML = moldura('Entrar', 'Área do motorista. Você entra uma vez neste celular e o app fica conectado.', '' + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
       '<form id="lForm" method="post" action="#" autocomplete="on">' +
       '<label for="lEmail">E-mail</label><input id="lEmail" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" required value="' + esc(salvo) + '">' +
       '<label for="lSenha">Senha</label><div class="senha"><input id="lSenha" name="password" type="password" autocomplete="current-password" required><button type="button" id="lVer" aria-label="Mostrar senha">Mostrar</button></div>' +
       '<label class="lembrar"><input id="lLembrar" type="checkbox" ' + (salvo || !msg ? 'checked' : '') + '> Lembrar meu e-mail neste celular</label>' +
       '<button type="submit" class="prim" id="lOk">Entrar</button>' +
-      '<p class="dica">Quando o celular perguntar <b>"Salvar senha?"</b>, toque em <b>Salvar</b>. Assim, se precisar entrar de novo, o iPhone ou o Android preenchem a senha sozinhos.</p></form>';
+      '<p class="dica">Quando o celular perguntar <b>"Salvar senha?"</b>, toque em <b>Salvar</b>. Assim, se precisar entrar de novo, o iPhone ou o Android preenchem a senha sozinhos.</p></form>');
     $('lVer').onclick = () => { const i = $('lSenha'); const ver = i.type === 'password'; i.type = ver ? 'text' : 'password'; $('lVer').textContent = ver ? 'Esconder' : 'Mostrar'; $('lVer').setAttribute('aria-label', ver ? 'Esconder senha' : 'Mostrar senha'); };
     if (salvo) $('lSenha').focus();
     $('lForm').onsubmit = async (ev) => {
@@ -277,8 +282,8 @@
   function telaCriarPin(msg) {
     return new Promise((ok) => {
       const L = $('login'); L.hidden = false; travado = true;
-      L.innerHTML = '<img src="logo.png" alt="Talento"><h1>Crie seu PIN</h1><p>4 números para abrir o app. Ele será pedido a cada 1 hora e funciona mesmo sem sinal.</p>' + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
-        '<form id="pForm">' + campoPin('p1', 'PIN (4 números)') + campoPin('p2', 'Repita o PIN') + '<button type="submit" class="prim">Salvar PIN</button></form>';
+      L.innerHTML = moldura('Crie seu PIN', '4 números para abrir o app. Ele será pedido a cada 1 hora e funciona mesmo sem sinal.', '' + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
+        '<form id="pForm">' + campoPin('p1', 'PIN (4 números)') + campoPin('p2', 'Repita o PIN') + '<button type="submit" class="prim">Salvar PIN</button></form>');
       $('p1').focus();
       $('pForm').onsubmit = async (ev) => {
         ev.preventDefault();
@@ -296,8 +301,8 @@
   function telaPin(msg) {
     return new Promise((ok) => {
       const L = $('login'); L.hidden = false; travado = true;
-      L.innerHTML = '<img src="logo.png" alt="Talento"><h1>Digite seu PIN</h1>' + (S.motorista ? '<p>' + esc(S.motorista) + '</p>' : '') + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
-        '<form id="pForm">' + campoPin('p1', 'PIN') + '<button type="submit" class="prim">Abrir</button></form><button type="button" id="pEsqueci">Esqueci o PIN</button>';
+      L.innerHTML = moldura('Digite seu PIN', S.motorista ? 'Olá, ' + S.motorista + '.' : 'Para continuar, digite seu PIN.', '' + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
+        '<form id="pForm">' + campoPin('p1', 'PIN') + '<button type="submit" class="prim">Abrir</button></form><button type="button" id="pEsqueci" class="link">Esqueci o PIN</button>');
       $('p1').focus();
       $('pEsqueci').onclick = () => sairDoCelular('Entre com e-mail e senha para criar um PIN novo.');
       $('pForm').onsubmit = async (ev) => {
