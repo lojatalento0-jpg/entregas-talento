@@ -264,6 +264,71 @@
     };
   }
 
+  /* ---------- PIN: bloqueio a cada 1 hora, funciona sem internet ---------- */
+  const PIN_MIN = 60, PIN_TENTATIVAS = 5;
+  let travado = false;
+  async function hashPin(pin, salt) {
+    const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+    const b = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: new Uint8Array(salt), iterations: 150000, hash: 'SHA-256' }, k, 256);
+    return Array.from(new Uint8Array(b));
+  }
+  const igual = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+  const campoPin = (id, rot) => '<label for="' + id + '">' + rot + '</label><input id="' + id + '" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required class="pin">';
+  function telaCriarPin(msg) {
+    return new Promise((ok) => {
+      const L = $('login'); L.hidden = false; travado = true;
+      L.innerHTML = '<img src="logo.png" alt="Talento"><h1>Crie seu PIN</h1><p>4 números para abrir o app. Ele será pedido a cada 1 hora e funciona mesmo sem sinal.</p>' + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
+        '<form id="pForm">' + campoPin('p1', 'PIN (4 números)') + campoPin('p2', 'Repita o PIN') + '<button type="submit" class="prim">Salvar PIN</button></form>';
+      $('p1').focus();
+      $('pForm').onsubmit = async (ev) => {
+        ev.preventDefault();
+        const a = $('p1').value, b = $('p2').value;
+        if (!/^\d{4}$/.test(a)) return ok(telaCriarPin('O PIN precisa ter 4 números.'));
+        if (a !== b) return ok(telaCriarPin('Os dois PINs não são iguais.'));
+        if (/^(\d)\1{3}$/.test(a) || '0123456789'.includes(a) || '9876543210'.includes(a)) return ok(telaCriarPin('Escolha um PIN menos óbvio (nada de 1111 ou 1234).'));
+        const salt = Array.from(crypto.getRandomValues(new Uint8Array(16)));
+        await kvSet('pin', { salt: salt, hash: await hashPin(a, salt) });
+        await kvSet('pinErros', 0); await kvSet('desbloqueio', Date.now());
+        L.hidden = true; L.innerHTML = ''; travado = false; ok();
+      };
+    });
+  }
+  function telaPin(msg) {
+    return new Promise((ok) => {
+      const L = $('login'); L.hidden = false; travado = true;
+      L.innerHTML = '<img src="logo.png" alt="Talento"><h1>Digite seu PIN</h1>' + (S.motorista ? '<p>' + esc(S.motorista) + '</p>' : '') + (msg ? '<p class="aviso" role="alert">' + esc(msg) + '</p>' : '') +
+        '<form id="pForm">' + campoPin('p1', 'PIN') + '<button type="submit" class="prim">Abrir</button></form><button type="button" id="pEsqueci">Esqueci o PIN</button>';
+      $('p1').focus();
+      $('pEsqueci').onclick = () => sairDoCelular('Entre com e-mail e senha para criar um PIN novo.');
+      $('pForm').onsubmit = async (ev) => {
+        ev.preventDefault();
+        const P = await kvGet('pin');
+        if (P && igual(await hashPin($('p1').value, P.salt), P.hash)) {
+          await kvSet('pinErros', 0); await kvSet('desbloqueio', Date.now());
+          L.hidden = true; L.innerHTML = ''; travado = false; return ok();
+        }
+        const n = ((await kvGet('pinErros')) || 0) + 1; await kvSet('pinErros', n);
+        if (n >= PIN_TENTATIVAS) return sairDoCelular('PIN errado 5 vezes. Por segurança, entre de novo com e-mail e senha.');
+        ok(telaPin('PIN errado. Restam ' + (PIN_TENTATIVAS - n) + ' tentativa(s).'));
+      };
+    });
+  }
+  async function sairDoCelular(msg) {
+    // Tira o acesso deste celular, mas NÃO apaga o que ainda não foi enviado (fila e fotos ficam guardadas).
+    S.sess = null; travado = false;
+    await kvSet('sessao', null); await kvSet('pin', null); await kvSet('pinErros', 0);
+    telaLogin(msg);
+  }
+  async function conferirTrava() {
+    if (DEMO || travado || !S.sess) return;
+    const P = await kvGet('pin');
+    if (!P) { await telaCriarPin(); return; }
+    const t = (await kvGet('desbloqueio')) || 0;
+    if (Date.now() - t > PIN_MIN * 60000) await telaPin();
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') conferirTrava(); });
+  setInterval(conferirTrava, 30000);
+
   /* ---------- início ---------- */
   async function iniciar() {
     S.est = (await kvGet(estKey())) || S.est;
@@ -273,6 +338,7 @@
       if (!S.sess) return telaLogin();
       S.motorista = (S.sess.user && S.sess.user.user_metadata && S.sess.user.user_metadata.nome) || '';
       $('quem').textContent = S.motorista ? 'Motorista: ' + S.motorista : '';
+      await conferirTrava();
     } else $('quem').textContent = 'Demonstração com os 15 cupons do lote';
     S.lista = await kvGet('lista-' + S.data);
     render();

@@ -73,3 +73,4 @@ img{max-width:100%}
 .senha{display:flex;gap:6px}.senha input{flex:1}.senha button{min-width:92px;font-size:14px}
 .login .lembrar{display:flex;align-items:center;gap:10px;font-weight:500;min-height:44px}.login .lembrar input{width:22px;height:22px;min-height:0}
 .dica{font-size:13px;color:var(--mute);margin:4px 0 0}
+input.pin{font-size:28px;letter-spacing:.6em;text-align:center}
