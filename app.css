@@ -74,3 +74,31 @@ img{max-width:100%}
 .login .lembrar{display:flex;align-items:center;gap:10px;font-weight:500;min-height:44px}.login .lembrar input{width:22px;height:22px;min-height:0}
 .dica{font-size:13px;color:var(--mute);margin:4px 0 0}
 input.pin{font-size:28px;letter-spacing:.6em;text-align:center}
+
+/* Abertura animada do login: caminhão caçamba chega, descarrega e a marca aparece */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.intro{display:flex;flex-direction:column;align-items:center;gap:2px;margin:4px 0 6px}
+.cena{width:100%;max-width:380px;height:auto;overflow:visible}
+.cena .chao{stroke:#bdb9b9;stroke-width:3;stroke-linecap:round}
+.cena .chassi{fill:#363435}.cena .corpo{fill:#c62828}.cena .borda{fill:#8e1f1f}.cena .carga{fill:#b8875a}
+.cena .cabine{fill:#f4f4f4;stroke:#363435;stroke-width:2}.cena .vidro{fill:#9cc3dd}.cena .farol{fill:#ffd54f}
+.cena .roda circle{fill:#2b292a;stroke:#6d6a6a;stroke-width:4}.cena .roda path{stroke:#9a9696;stroke-width:3}
+.cena .monte path{fill:#b8875a}.cena .graos circle{fill:#b8875a}
+.cena .caminhao{animation:chega 1.2s cubic-bezier(.2,.8,.3,1) both}
+.cena .roda{transform-box:view-box;animation:gira .4s linear 3 both}
+.cena .cacamba{transform-box:fill-box;transform-origin:0% 100%;animation:bascula 1.5s ease-in-out 1.15s both}
+.cena .graos circle{opacity:0;animation:cai .7s ease-in 1.45s both}
+.cena .graos circle:nth-child(2){animation-delay:1.55s}.cena .graos circle:nth-child(3){animation-delay:1.65s}.cena .graos circle:nth-child(4){animation-delay:1.75s}.cena .graos circle:nth-child(5){animation-delay:1.85s}
+.cena .monte{transform-box:fill-box;transform-origin:50% 100%;animation:monte .7s ease-out 1.6s both}
+.cena .losango{transform-box:fill-box;transform-origin:50% 100%;animation:pula .7s cubic-bezier(.3,1.6,.5,1) 2.25s both,balanca .6s ease-in-out 2.95s 2}
+.logoIntro{width:min(300px,78%);height:auto;animation:surge .6s cubic-bezier(.3,1.5,.5,1) 2.7s both}
+@keyframes chega{from{transform:translateX(-330px)}to{transform:translateX(0)}}
+@keyframes gira{to{transform:rotate(360deg)}}
+@keyframes bascula{0%{transform:rotate(0)}35%,70%{transform:rotate(-26deg)}100%{transform:rotate(0)}}
+@keyframes cai{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(-26px,34px)}}
+@keyframes monte{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes pula{0%{opacity:0;transform:translateY(34px) scale(.3)}100%{opacity:1;transform:translateY(-30px) scale(1)}}
+@keyframes balanca{0%,100%{transform:translateY(-30px) rotate(0)}25%{transform:translateY(-30px) rotate(-8deg)}75%{transform:translateY(-30px) rotate(8deg)}}
+@keyframes surge{from{opacity:0;transform:translateY(12px) scale(.9)}to{opacity:1;transform:none}}
+.login form{animation:surge .4s ease-out .2s both}
+@media (prefers-reduced-motion: reduce){.cena *,.logoIntro,.login form{animation:none!important}.cena .graos{display:none}.cena .losango{transform:translateY(-30px)}}
