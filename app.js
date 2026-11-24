@@ -145,7 +145,7 @@
     const hasLoc = s.lat != null;
     const cls = done ? 'ok' : falha ? 'err' : hasLoc ? '' : 'semloc';
     let h = '<article class="card' + (done ? ' feito' : '') + (falha ? ' falhou' : '') + '">';
-    h += '<div class="cab"><div class="n ' + cls + '">' + (i + 1) + '</div><div><h2>' + esc(s.nome) + '</h2><div class="end">' + esc(s.endereco) + '</div></div></div>';
+    h += '<div class="cab"><div class="n ' + cls + '"><i>' + (i + 1) + '</i></div><div><h2>' + esc(s.nome) + '</h2><div class="end">' + esc(s.endereco) + '</div></div></div>';
     if (s.prazo) h += '<span class="tag prazo">' + esc(s.prazo) + '</span>';
     if (s.outroLocal) h += '<span class="tag outro">Entregar em outro endereço: ver obs.</span>';
     if (s.obs) h += '<div class="obs"><b>Obs.:</b> ' + esc(s.obs) + '</div>';
@@ -242,7 +242,7 @@
   /* ---------- login (uma vez por celular) ---------- */
   function telaLogin(msg) {
     const L = $('login'); L.hidden = false;
-    L.innerHTML = '<h1>Entregas Talento</h1><p>Entrada feita uma vez neste celular.</p>' + (msg ? '<p class="aviso">' + esc(msg) + '</p>' : '') + '<input id="lEmail" type="email" autocomplete="username" placeholder="E-mail do celular"><input id="lSenha" type="password" autocomplete="current-password" placeholder="Senha"><button type="button" class="prim" id="lOk">Entrar</button>';
+    L.innerHTML = '<img src="logo.png" alt="Talento"><h1>Entregas</h1><p>Entrada feita uma vez neste celular.</p>' + (msg ? '<p class="aviso">' + esc(msg) + '</p>' : '') + '<input id="lEmail" type="email" autocomplete="username" placeholder="E-mail do celular"><input id="lSenha" type="password" autocomplete="current-password" placeholder="Senha"><button type="button" class="prim" id="lOk">Entrar</button>';
     $('lOk').onclick = async () => { try { await entrar($('lEmail').value.trim(), $('lSenha').value); L.hidden = true; iniciar(); } catch (e) { telaLogin('Não entrou. Confira e-mail e senha e se há sinal.'); } };
   }
 
